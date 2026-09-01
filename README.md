@@ -23,3 +23,7 @@ nix run .
 ## Contributing
 
 Corrections and additions are welcome. Open an issue or pull request at https://github.com/pterror/wyldfire-nix.
+
+## License
+
+The packaging code in this repo (`flake.nix` and friends) is ISC licensed - see [LICENSE](LICENSE). Wyldfire itself is closed source and not covered by this license; see WyChatTeam's own terms.
