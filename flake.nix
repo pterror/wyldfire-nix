@@ -9,7 +9,16 @@
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        # Wyldfire being unfree isn't optional - it's the whole point of
+        # this flake, so `allowUnfree` is baked into our own pkgs instance
+        # here rather than left to the ambient config. `legacyPackages`
+        # is a separate nixpkgs instantiation with `allowUnfree = false`
+        # hardcoded, so a downstream `nixConfig`/`allowUnfreePredicate`
+        # can never reach it no matter how `nixpkgs` is `follows`-ed.
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        };
 
         # Pinned to a specific upstream release deliberately, not
         # fetch-latest, so builds stay reproducible. Bump both `version`
