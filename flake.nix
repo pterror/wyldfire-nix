@@ -19,13 +19,20 @@
     }
     // flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        # Scoped to just wyldfire's own pname, not a blanket allowUnfree -
+        # so bare `nix build`/`nix run` on this flake works standalone
+        # with zero consumer setup, without waving through anything else
+        # built off this pkgs (gtk3, webkitgtk_4_1, ...). Matches how
+        # spicetify-nix/claude-desktop-debian/wispr-flow-linux do it.
+        # `overlays.default` below stays unscoped-config entirely, so a
+        # consumer applying it to their own pkgs keeps full say over
+        # their own allowUnfree/allowUnfreePredicate.
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfreePredicate = pkg: (nixpkgs.lib.getName pkg) == "wyldfire";
+        };
       in
       {
-        # Convenience for building this repo standalone. Wyldfire is
-        # unfree, so this needs the caller's own consent the normal nix
-        # way - NIXPKGS_ALLOW_UNFREE=1, `nixpkgs.config.allowUnfree` in a
-        # NixOS/home-manager config, etc. We don't set it for them here.
         packages.default = pkgs.callPackage ./package.nix { };
 
         apps.default = flake-utils.lib.mkApp {
