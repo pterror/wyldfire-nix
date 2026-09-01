@@ -1,0 +1,12 @@
+# Nix
+result
+result-*
+.direnv/
+
+# Secrets
+.envrc.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
